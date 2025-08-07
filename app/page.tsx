@@ -1,6 +1,9 @@
 "use client";
 
+import { useState } from "react";
+
 function App() {
+  const [loading, setLoading] = useState(false);
   function loadScript(src: string) {
     return new Promise((resolve) => {
       const script = document.createElement("script");
@@ -16,6 +19,7 @@ function App() {
   }
 
   async function displayRazorpay() {
+    setLoading(true);
     const res = await loadScript(
       "https://checkout.razorpay.com/v1/checkout.js",
     );
@@ -45,7 +49,7 @@ function App() {
         theme: {
           color: "#3399cc",
         },
-        handler: function (response) {
+        handler: function (response: any) {
           fetch("/api/verify", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -65,9 +69,12 @@ function App() {
             });
         },
       };
+      setLoading(false);
+      //@ts-expect-error
       const paymentObject = new window.Razorpay(options);
       paymentObject.open();
     } catch (e) {
+      setLoading(false);
       console.log(e);
     }
   }
@@ -78,9 +85,10 @@ function App() {
         <h1 className="pb-4">Pay for the space now</h1>
         <button
           onClick={displayRazorpay}
-          className="bg-amber-300 border active:scale-95"
+          disabled={loading ? true : false}
+          className={`bg-amber-300 border cursor-pointer active:scale-95 disabled:bg-amber-500 disabled:cursor-not-allowed`}
         >
-          click here to pay
+          {loading ? "wait" : "click here to pay"}
         </button>
       </div>
     </div>

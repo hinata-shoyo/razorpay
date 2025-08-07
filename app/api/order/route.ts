@@ -34,7 +34,6 @@ export async function POST(req: NextRequest) {
       });
     });
     //add the order/transaction to the db with status "pending"
-
     return NextResponse.json({ order_id: (order as any).id });
   } catch (err) {
     console.error(err);
